@@ -5,7 +5,7 @@
 ARG PYTHON_VERSION=3.13
 
 # ---------- builder ----------
-FROM 172.24.11.237:6001/python:${PYTHON_VERSION}-slim-bookworm AS builder
+FROM python:${PYTHON_VERSION}-slim-bookworm AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -32,7 +32,7 @@ COPY pyproject.toml README.md ./
 RUN uv sync --no-dev --no-install-project
 
 # ---------- runtime ----------
-FROM 172.24.11.237:6001/python:${PYTHON_VERSION}-slim-bookworm AS runtime
+FROM python:${PYTHON_VERSION}-slim-bookworm AS runtime
 
 ARG ENABLE_FASTMRZ=0
 ARG GIT_SHA=unknown
