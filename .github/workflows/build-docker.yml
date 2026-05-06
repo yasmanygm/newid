@@ -1,0 +1,46 @@
+name: Build and Export Docker Image
+
+on:
+  push:
+    branches: [ main, master ]      # Se ejecuta al pushear a main/master
+    paths:
+      - 'Dockerfile'                 # Solo si cambió Dockerfile
+      - '.github/workflows/build-docker.yml'  # O si cambió el workflow
+  workflow_dispatch:                 # También se puede ejecutar manualmente
+
+jobs:
+  build:
+    runs-on: ubuntu-latest           # Usa un runner de Ubuntu
+    
+    steps:
+      # Descarga el código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Configura Buildx para mejores capacidades de build
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container   # Usa driver container para mejor compatibilidad
+      
+      # Construye la imagen Docker usando el Dockerfile
+      - name: Build Docker image
+        run: |
+          docker build -t omnimrz-paddleocr:latest .
+          # Exporta la imagen a un archivo .tar
+          docker save omnimrz-paddleocr:latest -o omnimrz-paddleocr.tar
+      
+      # Comprime el archivo para reducir tamaño
+      - name: Compress image
+        run: |
+          gzip -c omnimrz-paddleocr.tar > omnimrz-paddleocr.tar.gz
+      
+      # Sube el archivo como artefacto descargable
+      - name: Upload Docker image as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: omnimrz-docker-image
+          path: |
+            omnimrz-paddleocr.tar
+            omnimrz-paddleocr.tar.gz
+          retention-days: 7
