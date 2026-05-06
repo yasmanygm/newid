@@ -1,0 +1,28 @@
+[project]
+name = "passport-reader-service"
+version = "1.0.0"
+description = "HTTP service wrapping the MRZ reader pipeline"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    # Pipeline deps (mirrored from passport_reader_no_train)
+    "ultralytics>=8.3",
+    "paddlepaddle>=3.3",
+    "paddleocr>=2.9",
+    "mrz>=0.6",
+    "opencv-python-headless>=4.10",
+    "numpy>=1.26",
+    # HTTP service deps
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "python-multipart>=0.0.12",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "python-json-logger>=2.0",
+]
+
+[project.optional-dependencies]
+fastmrz = ["fastmrz>=1.0"]
+
+[tool.uv]
+package = false
