@@ -1,0 +1,35 @@
+services:
+  mrz:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENABLE_FASTMRZ: "0"
+        GIT_SHA: ${GIT_SHA:-dev}
+    image: passport-reader:latest
+    container_name: mrz
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      MRZ_ENGINE: ${MRZ_ENGINE:-paddleocr}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
+      MAX_IMAGE_DIM: ${MAX_IMAGE_DIM:-1024}
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m
+      - /app/.ultralytics:size=8m
+      - /home/app/.paddlex:size=64m
+    mem_limit: 4g
+    cpus: 2.0
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
